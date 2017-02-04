@@ -1,0 +1,41 @@
+body {
+    margin: 20px;
+    font-size: 24px;
+    font-family: Arial;
+}
+/*.nobels div {*/
+    /*[>margin: 3px;<]*/
+    /*text-align: center;*/
+    /*font-size: inherit;;*/
+    /*font-family: inherit;*/
+    /*[>padding: 15px 32px;<]*/
+    /*[>text-decoration: none;<]*/
+/*}*/
+/*p {*/
+    /*padding-bottom: 30px;*/
+/*}*/
+.nobelsButton {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    height:60px;
+    width:150px; 
+    color: white;
+    background-color: #222222;
+    border:7px;
+    border-style:solid;
+    border-color:red;
+}
+
+.barOuter {
+    position: relative;
+    width: 100px;
+    height: 30px;
+    background-color: #cccccc;
+}
+.barInner {
+    position: absolute;
+    width: 1%;
+    height: 100%;
+    background-color: green;
+}
