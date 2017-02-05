@@ -1,0 +1,11 @@
+0 n 60 note overdub 0  0 1  norm 0 127
+0 n 61 note undo    0  0 1  norm 0 127
+0 n 62 note record  0  0 1  norm 0 127
+0 n 63 note record  1  0 1  norm 0 127
+0 n 64 note record  2  0 1  norm 0 127
+0 n 65 note record  3  0 1  norm 0 127
+0 n 67 note redo    0  0 1  norm 0 127
+0 n 68 note mute    0  0 1  norm 0 127
+0 n 69 note mute    1  0 1  norm 0 127
+0 n 70 note mute    2  0 1  norm 0 127
+0 n 71 note mute    3  0 1  norm 0 127

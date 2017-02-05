@@ -4,157 +4,6 @@ function startListening(state, buttons, looper) {
 }
 
 
-function Bitwig() {
-
-    this.knob0 = document.getElementById("knob0");
-    this.knob1 = document.getElementById("knob1");
-    this.knob2 = document.getElementById("knob2");
-    this.valueKnob0 = document.getElementById("valueKnob0");
-    this.valueKnob1 = document.getElementById("valueKnob1");
-    this.valueKnob2 = document.getElementById("valueKnob2");
-    this.ribbon0 = document.getElementById("ribbon0");
-    this.ribbon1 = document.getElementById("ribbon1");
-    this.ribbon2 = document.getElementById("ribbon2");
-    this.valueRibbon0 = document.getElementById("valueRibbon0");
-    this.valueRibbon1 = document.getElementById("valueRibbon1");
-    this.valueRibbon2 = document.getElementById("valueRibbon2");
-    this.instrument = document.getElementById("instrument");
-    this.currentBankName = document.getElementById("currentBankName");
-    this.volume = document.getElementById("volume");
-
-    this.keytarTapTempo = document.getElementById("keytarButton4");
-    this.keytarPlayback = document.getElementById("keytarButton5");
-    //this.keytarButton1  = document.getElementById("keytarButton1");
-    //this.keytarButton2  = document.getElementById("keytarButton2");
-    //this.keytarButton3  = document.getElementById("keytarButton3");
-    //this.keytarButton4  = document.getElementById("keytarButton4");
-    //this.keytarButton5  = document.getElementById("keytarButton5");
-    //this.keytarButton6  = document.getElementById("keytarButton6");
-    //this.keytarButton7  = document.getElementById("keytarButton7");
-
-    this.trackButtons = [];
-    this.nextBankButton = document.getElementById("button00");
-    this.prevBankButton = document.getElementById("button06");
-    this.trackButtons[0] = document.getElementById("button01");
-    this.trackButtons[1] = document.getElementById("button02");
-    this.trackButtons[2] = document.getElementById("button07");
-    this.trackButtons[3] = document.getElementById("button08");
-    this.trackButtons[4] = document.getElementById("button09");
-
-    //-----------------------------------------------------
-    
-    this.keytarTapTempo.innerHTML = "Tap Tempo";
-
-    this.nextBankButton.innerHTML = "Next Bank";
-    this.prevBankButton.innerHTML = "Previous Bank";
-    this.trackButtons[0].innerHTML = "Instrument 0";
-    this.trackButtons[1].innerHTML = "Instrument 1";
-    this.trackButtons[2].innerHTML = "Instrument 2";
-    this.trackButtons[3].innerHTML = "Instrument 3";
-    this.trackButtons[4].innerHTML = "Instrument 5";
-
-    this.color = {
-        border  : "#2222aa",
-        cold    : "#222222",
-        hot     : "#2222ff",
-    }
-
-    this.nextBankButton.style.background = this.color.cold;
-    this.prevBankButton.style.background = this.color.cold;
-    this.trackButtons[0].style.background = this.color.cold;
-    this.trackButtons[1].style.background = this.color.cold;
-    this.trackButtons[2].style.background = this.color.cold;
-    this.trackButtons[3].style.background = this.color.cold;
-    this.trackButtons[4].style.background = this.color.cold;
-
-    this.nextBankButton.style.borderColor = this.color.border;
-    this.prevBankButton.style.borderColor = this.color.border;
-    this.trackButtons[0].style.borderColor = this.color.border;
-    this.trackButtons[1].style.borderColor = this.color.border;
-    this.trackButtons[2].style.borderColor = this.color.border;
-    this.trackButtons[3].style.borderColor = this.color.border;
-    this.trackButtons[4].style.borderColor = this.color.border;
-}
-Bitwig.prototype.bwIsPlaying = function() {
-    this.keytarPlayback.style.background = this.color.cold;
-    this.keytarPlayback.innerHTML = "Playing";
-}
-Bitwig.prototype.bwIsNotPlaying  = function() {
-    this.keytarPlayback.style.background = this.color.cold;
-    this.keytarPlayback.innerHTML = "Stopped";
-}
-Bitwig.prototype.selectTrack = function(trackIdx) {
-    for(var i = 0; i < 5; i++) {
-        this.trackButtons[i].style.background = this.color.cold;
-    }
-        this.trackButtons[trackIdx].style.background = this.color.hot;
-}
-
-
-Bitwig.prototype.updateWithState = function(state) {
-    var currentInstrument = state.get(["bw","currentInstrument"]);
-    var visibleBank       = state.get(["bw","visibleBank"]);
-    var knobDevice        = state.get(["bw","knobDevice"]);
-    var nextBank          = state.get(["bw","nextBank"]);
-    var prevBank          = state.get(["bw","prevBank"]);
-    if(currentInstrument !== undefined 
-        && visibleBank !== undefined
-        && knobDevice !== undefined
-        && nextBank !== undefined
-        && prevBank !== undefined
-    )
-    {
-        for(var i = 0; i < 5; i++) {
-            this.trackButtons[i].innerHTML = state.get(["bw","tracks",visibleBank[0],i,"name"]); 
-            this.trackButtons[i].style.background = this.color.cold;
-        }
-        if(currentInstrument[0] == visibleBank[0]) {
-            this.trackButtons[currentInstrument[1]].style.background = this.color.hot;
-        }
-        this.nextBankButton.innerHTML = state.get(["bw","tracks",nextBank[0],"name"]);
-        this.prevBankButton.innerHTML = state.get(["bw","tracks",prevBank[0],"name"]);
-
-        this.instrument.innerHTML = state.get(["bw","tracks",currentInstrument[0],"name"]) + "/" + 
-                                    state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"name"]);
-
-        this.currentBankName.innerHTML = state.get(["bw","tracks",visibleBank,"name"]);
-
-        if(knobDevice == 0) {
-            this.knob0.innerHTML = state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"device", 0, "macro",0,"name"]);
-            this.knob1.innerHTML = state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"device", 0, "macro",1,"name"]);
-            this.knob2.innerHTML = state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"device", 0, "macro",2,"name"]);
-            this.valueKnob0.style.width = state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"device", 0, "macro",0,"amount"])[0];
-            this.valueKnob1.style.width = state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"device", 0, "macro",1,"amount"])[0];
-            this.valueKnob2.style.width = state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"device", 0, "macro",2,"amount"])[0];
-        } else {
-            this.knob0.innerHTML = state.get(["bw","tracks",currentInstrument[0], "device", knobDevice-1, "macro",0,"name"]);
-            this.knob1.innerHTML = state.get(["bw","tracks",currentInstrument[0], "device", knobDevice-1, "macro",1,"name"]);
-            this.knob2.innerHTML = state.get(["bw","tracks",currentInstrument[0], "device", knobDevice-1, "macro",2,"name"]);
-            this.valueKnob0.style.width = state.get(["bw","tracks",currentInstrument[0], "device", knobDevice-1, "macro",0,"amount"])[0];
-            this.valueKnob1.style.width = state.get(["bw","tracks",currentInstrument[0], "device", knobDevice-1, "macro",1,"amount"])[0];
-            this.valueKnob2.style.width = state.get(["bw","tracks",currentInstrument[0], "device", knobDevice-1, "macro",2,"amount"])[0];
-
-        }
-        this.ribbon0.innerHTML = state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"device", 0, "macro",4,"name"]);
-        this.ribbon1.innerHTML = state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"device", 0, "macro",5,"name"]);
-        this.ribbon2.innerHTML = state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"device", 0, "macro",6,"name"]);
-        this.valueRibbon0.style.width = state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"device", 0, "macro",4,"amount"])[0];
-        this.valueRibbon1.style.width = state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"device", 0, "macro",5,"amount"])[0];
-        this.valueRibbon2.style.width = state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"device", 0, "macro",6,"amount"])[0];
-        this.volume.style.width = state.get(["bw","tracks",currentInstrument[0],currentInstrument[1],"volume"])[0];
-    }
-
-
-    var bwIsPlaying = state.get(["bw","isPlaying"]);
-    if(bwIsPlaying !== undefined) {
-        if(bwIsPlaying[0]) {
-            this.bwIsPlaying();
-        } else {
-            this.bwIsNotPlaying();
-        }
-    }
-}
-
 
 function State() {
     this.data = [];
@@ -197,6 +46,196 @@ State.prototype.get = function(path) {
     return curr;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function Parameter() {
+    this.volume = document.getElementById("volume");
+    this.macroName = [];
+    this.macroValue = [];
+    for(var i = 0; i < 8; i++) {
+        this.macroName[i] = document.getElementById("macroName"+i);
+        this.macroValue[i] = document.getElementById("macroValue"+i);
+    }
+    this.asdfName = [];
+    this.asdfValue = [];
+    for(var j = 0; j < 8; j++) {
+        this.asdfName[j] = [];
+        this.asdfValue[j] = [];
+        for(var i = 0; i < 8; i++) {
+            this.asdfName[j][i] = document.getElementById("asdfName"+j+"-"+i);
+            this.asdfValue[j][i] = document.getElementById("asdfValue"+j+"-"+i);
+        }
+    }
+    this.color = {
+        activeFG    : "#0000bb",
+        activeBG    : "#aaaadd",
+        passiveFG   : "#999999",
+        passiveBG   : "#dddddd",
+        alwaysFG    : "#007700",
+        alwaysBG    : "#aaccaa",
+    }
+}
+
+Parameter.prototype.update = function(state) {
+    var currInst          = state.get(["bw","currInst"]);
+    var knobDevice        = state.get(["bw","knobDevice"]);
+    if(currInst !== undefined && knobDevice !== undefined)
+    {
+        this.volume.firstChild.style.width = state.get(["bw","tracks",currInst[0],currInst[1],"volume"]);
+        for(var i = 0; i < 8; i++) {
+            if(this.macroName[i] != null)  this.macroName[i].innerHTML    = state.get(["bw","tracks",currInst[0],currInst[1],"device",0, "macro",i,"name"]);
+            if(this.macroValue[i] != null) this.macroValue[i].firstChild.style.width = state.get(["bw","tracks",currInst[0],currInst[1],"device",0, "macro",i,"amount"]);
+        }
+        for(var j = 0; j < 8; j++) {
+            for(var i = 0; i < 8; i++) {
+                if(this.asdfName[j][i] != null)  this.asdfName[j][i].innerHTML    = state.get(["bw","tracks",currInst[0],"device",j,"macro",i,"name"]);
+                if(this.asdfValue[j][i] != null) this.asdfValue[j][i].firstChild.style.width = state.get(["bw","tracks",currInst[0],"device",j,"macro",i,"amount"]);
+            }
+        }
+
+
+        this.volume.firstChild.style.background = this.color.activeFG;
+        this.volume.style.background = this.color.activeBG;
+        for(var i = 4; i < 8; i++) {
+            if(this.macroValue[i] != null) this.macroValue[i].firstChild.style.background = this.color.activeFG;
+            if(this.macroValue[i] != null) this.macroValue[i].style.background = this.color.activeBG;
+        }
+        for(var i = 0; i < 4; i++) {
+            if(knobDevice == 0) {
+                if(this.macroValue[i] != null) this.macroValue[i].firstChild.style.background = this.color.activeFG;
+                if(this.macroValue[i] != null) this.macroValue[i].style.background = this.color.activeBG;
+            } else { 
+                if(this.macroValue[i] != null) this.macroValue[i].firstChild.style.background = this.color.passiveFG;
+                if(this.macroValue[i] != null) this.macroValue[i].style.background = this.color.passiveBG;
+            }
+        }
+        for(var j = 0; j < 8; j++) {
+            for(var i = 0; i < 4; i++) {
+                if(knobDevice-1 == j) {
+                    if(this.asdfValue[j][i] != null) this.asdfValue[j][i].firstChild.style.background = this.color.activeFG;
+                    if(this.asdfValue[j][i] != null) this.asdfValue[j][i].style.background = this.color.activeBG;
+                } else { 
+                    if(this.asdfValue[j][i] != null) this.asdfValue[j][i].firstChild.style.background = this.color.passiveFG;
+                    if(this.asdfValue[j][i] != null) this.asdfValue[j][i].style.background = this.color.passiveBG;
+                }
+            }
+        }
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function Track() {
+    this.tapTempo = document.getElementById("tapTempo");
+    this.playback = document.getElementById("playback");
+    this.nextBank = document.getElementById("nextBank");
+    this.prevBank = document.getElementById("prevBank");
+    this.currBank = document.getElementById("currBank");
+    this.currInst = document.getElementById("currInst");
+    this.numTracks = 8;
+    this.track = [];
+    for(var i = 0; i < this.numTracks; i++) {
+        this.track[i] = document.getElementById("track"+i);
+    }
+    
+    this.color = {
+        border     : "gray",
+        bankSelect : "#444444",
+        cold       : "#000000",
+        hot        : "#0000bb",
+    }
+    
+    //-----------------------------------------------------
+    
+    this.tapTempo.innerHTML = "Tap Tempo";
+    this.playback.innerHTML = "playback";
+    this.nextBank.innerHTML = "next bank";
+    this.prevBank.innerHTML = "prev bank";
+    for(var i = 0; i < this.numTracks; i++) {
+        this.track[i].innerHTML = "track "+i;
+    }
+
+    this.tapTempo.style.background = this.color.cold;
+    this.playback.style.background = this.color.cold;
+    this.nextBank.style.background = this.color.bankSelect;
+    this.prevBank.style.background = this.color.bankSelect;
+    for(var i = 0; i < this.numTracks; i++) {
+        this.track[i].style.background = this.color.cold;
+    }
+    this.tapTempo.style.borderColor = this.color.border;
+    this.playback.style.borderColor = this.color.border;
+    this.nextBank.style.borderColor = this.color.border;
+    this.prevBank.style.borderColor = this.color.border;
+    for(var i = 0; i < this.numTracks; i++) {
+        this.track[i].style.borderColor = this.color.border;
+    }
+}
+Track.prototype.bwIsPlaying = function() {
+    this.keytarPlayback.style.background = this.color.cold;
+    this.keytarPlayback.innerHTML = "Playing";
+}
+Track.prototype.bwIsNotPlaying  = function() {
+    this.keytarPlayback.style.background = this.color.cold;
+    this.keytarPlayback.innerHTML = "Stopped";
+}
+Track.prototype.selectTrack = function(trackIdx) {
+    for(var i = 0; i < 5; i++) {
+        this.track[i].style.background = this.color.cold;
+    }
+        this.track[trackIdx].style.background = this.color.hot;
+}
+
+
+Track.prototype.update = function(state) {
+    var currInst          = state.get(["bw","currInst"]);
+    var currBank          = state.get(["bw","currBank"]);
+    var nextBank          = state.get(["bw","nextBank"]);
+    var prevBank          = state.get(["bw","prevBank"]);
+    if(currInst !== undefined 
+       && currBank !== undefined
+       && nextBank !== undefined
+       && prevBank !== undefined
+    )
+    {
+        //update tracknames and selection
+        for(var i = 0; i < this.numTracks; i++) {
+            this.track[i].innerHTML = state.get(["bw","tracks",currBank[0],i,"name"]); 
+            this.track[i].style.background = this.color.cold;
+        }
+        if(currInst[0] == currBank[0]) {
+            this.track[currInst[1]].style.background = this.color.hot;
+        }
+
+        this.nextBank.innerHTML = state.get(["bw","tracks",nextBank[0],"name"]);
+        this.prevBank.innerHTML = state.get(["bw","tracks",prevBank[0],"name"]);
+        this.currBank.innerHTML = state.get(["bw","tracks",currBank[0],"name"]);
+
+        this.currInst.innerHTML = state.get(["bw","tracks",currInst[0],"name"]) + "/" + state.get(["bw","tracks",currInst[0],currInst[1],"name"]);
+
+    }
+
+    var isPlaying = state.get(["bw","isPlaying"]);
+    if(isPlaying !== undefined) {
+        if(isPlaying[0]) {
+            this.playback.style.background = this.color.cold;
+            this.playback.innerHTML = "Playing";
+        } else {
+            this.playback.style.background = this.color.cold;
+            this.playback.innerHTML = "Stopped";
+        }
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 function Looper() {
 
@@ -221,8 +260,8 @@ function Looper() {
     this.numLoops = 4;
 
     this.color = {
-        border  : "#aa2222",
-        cold    : "#222222",
+        border  : "gray",
+        cold    : "#000000",
         hot     : "#ff2222",
         waiting : "#ffff22",
         offline : "#dddddd",
@@ -233,7 +272,6 @@ function Looper() {
     this.lastFrac[1] = 0;
     this.lastFrac[2] = 0;
     this.lastFrac[3] = 0;
-
 
     //--------------------------
 
@@ -298,7 +336,7 @@ Looper.prototype.offline = function(i) {
     if(this.play[i] != null) this.play[i].style.background = this.color.offline;
     if(this.recd[i] != null) this.recd[i].style.background = this.color.offline;
 }
-Looper.prototype.updateWithState = function(state) {
+Looper.prototype.update = function(state) {
     for(var i = 0; i < this.numLoops; i++) {
         var slState = state.get(["sl",i,"state"]);
         if(slState === undefined) {
@@ -368,14 +406,19 @@ Looper.prototype.updateWithState = function(state) {
 
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 window.addEventListener('DOMContentLoaded', function() {
-    var state   = new State();
-    var bitwig  = new Bitwig();
-    var looper  = new Looper();
+    var state     = new State();
+    var track     = new Track();
+    var parameter = new Parameter();
+    var looper    = new Looper();
     ipcRenderer.on("osc", (evnt, msg) => {
         state.eventHandler(msg.address, msg.args);
-        bitwig.updateWithState(state);
-        looper.updateWithState(state);
+        track.update(state);
+        parameter.update(state);
+        looper.update(state);
     });
 });

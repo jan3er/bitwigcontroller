@@ -21,10 +21,10 @@ body {
     height:60px;
     width:150px; 
     color: white;
-    background-color: #222222;
-    border:7px;
+    background-color: #777777;
+    border:5px;
     border-style:solid;
-    border-color:red;
+    border-color:black;
 }
 
 .barOuter {

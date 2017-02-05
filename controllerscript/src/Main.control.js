@@ -1,6 +1,6 @@
 loadAPI(1);
 
-host.defineController("my scripts", "Footpedal and Keytar Simple", "1.3", "444440B0-806E-4123-AB4C-06176423F6F9");
+host.defineController("controllerscripts", "stagesetup", "0.1", "444440B0-806E-4123-AB5C-06176423F6F9");
 host.defineMidiPorts(2, 0);
 
 load ("Util.js");

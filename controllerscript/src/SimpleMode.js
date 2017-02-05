@@ -3,7 +3,7 @@ function SimpleMode(){
 
     //first entry: number of siblings in ith level
     //second entry: number of devices per track in ith level
-    this.tracksPerLevel  = [[5,5], [5,1], [5,1]];
+    this.tracksPerLevel  = [[5,5], [8,1], [5,1]];
     this.maxBank         = 10;
 
     this.instTrackIdx    = 0;
@@ -51,8 +51,8 @@ SimpleMode.prototype.selectNextBank = function(step) {
 SimpleMode.prototype.sendCurrentInstrumentAndBank = function() {
     var nextBank = Math.max(0, Math.min(this.maxBank, this.visibleBankIdx + 1));;
     var prevBank = Math.max(0, Math.min(this.maxBank, this.visibleBankIdx - 1));;
-    OSCSendMessage(this.sendToHost, this.sendToPort, "/bw/currentInstrument", [this.instBankIdx, this.instTrackIdx]);
-    OSCSendMessage(this.sendToHost, this.sendToPort, "/bw/visibleBank", this.visibleBankIdx);
+    OSCSendMessage(this.sendToHost, this.sendToPort, "/bw/currInst", [this.instBankIdx, this.instTrackIdx]);
+    OSCSendMessage(this.sendToHost, this.sendToPort, "/bw/currBank", this.visibleBankIdx);
     OSCSendMessage(this.sendToHost, this.sendToPort, "/bw/nextBank", nextBank);
     OSCSendMessage(this.sendToHost, this.sendToPort, "/bw/prevBank", prevBank);
     OSCSendMessage(this.sendToHost, this.sendToPort, "/bw/knobDevice", this.knobDevice);
@@ -105,13 +105,18 @@ SimpleMode.prototype.onKnobRibbon = function(macroIdx, value){
 SimpleMode.prototype.addMidiCallbacks = function() {
 
     var obj = this;
-    this.im.addButtonCallback( Nobels.UP,    ButtonAction.tap, function(){ obj.selectNextBank(1);});
-    this.im.addButtonCallback( Nobels.DOWN,  ButtonAction.tap, function(){ obj.selectNextBank(-1);});
-    this.im.addButtonCallback( Nobels.ONE,   ButtonAction.tap, function(){ obj.selectTrack(0);});
-    this.im.addButtonCallback( Nobels.TWO,   ButtonAction.tap, function(){ obj.selectTrack(1);});
-    this.im.addButtonCallback( Nobels.SIX,   ButtonAction.tap, function(){ obj.selectTrack(2);});
-    this.im.addButtonCallback( Nobels.SEVEN, ButtonAction.tap, function(){ obj.selectTrack(3);});
-    this.im.addButtonCallback( Nobels.EIGHT, ButtonAction.tap, function(){ obj.selectTrack(4);});
+    this.im.addButtonCallback( Nobels.UP,    ButtonAction.tap, function(){ obj.bw.transportWrapper.togglePlay();});
+    this.im.addButtonCallback( Nobels.DOWN,  ButtonAction.tap, function(){ obj.bw.transportWrapper.tapTempo();});
+    this.im.addButtonCallback( Nobels.ONE,   ButtonAction.tap, function(){ obj.selectNextBank(1);});
+    this.im.addButtonCallback( Nobels.SIX,   ButtonAction.tap, function(){ obj.selectNextBank(-1);});
+    this.im.addButtonCallback( Nobels.TWO,   ButtonAction.tap, function(){ obj.selectTrack(0);});
+    this.im.addButtonCallback( Nobels.THREE, ButtonAction.tap, function(){ obj.selectTrack(1);});
+    this.im.addButtonCallback( Nobels.FOUR,  ButtonAction.tap, function(){ obj.selectTrack(2);});
+    this.im.addButtonCallback( Nobels.FIVE,  ButtonAction.tap, function(){ obj.selectTrack(3);});
+    this.im.addButtonCallback( Nobels.SEVEN, ButtonAction.tap, function(){ obj.selectTrack(4);});
+    this.im.addButtonCallback( Nobels.EIGHT, ButtonAction.tap, function(){ obj.selectTrack(5);});
+    this.im.addButtonCallback( Nobels.NINE,  ButtonAction.tap, function(){ obj.selectTrack(6);});
+    this.im.addButtonCallback( Nobels.ZERO,  ButtonAction.tap, function(){ obj.selectTrack(7);});
 
 
     // volume slider

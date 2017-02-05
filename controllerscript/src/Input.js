@@ -8,18 +8,32 @@ ButtonEvent = {
 // the CC values of the keytar
 // somehow the Nobels sometimes randomly transposes one octave up or low...
 Nobels = {
-    UP    : [60, 72],
-    ONE   : [61, 73],
-    TWO   : [62, 74],
-    THREE : [63, 75],
-    FOUR  : [64, 76],
-    FIVE  : [65, 77],
-    DOWN  : [66, 78],
-    SIX   : [67, 79],
-    SEVEN : [68, 80],
-    EIGHT : [69, 81],
-    NINE  : [70, 82],
-    ZERO  : [71, 83],
+    UP    : [72],
+    ONE   : [73],
+    TWO   : [74],
+    THREE : [75],
+    FOUR  : [76],
+    FIVE  : [77],
+    DOWN  : [78],
+    SIX   : [79],
+    SEVEN : [80],
+    EIGHT : [81],
+    NINE  : [82],
+    ZERO  : [83],
+}
+SecondNobels = {
+    UP    : [60],
+    ONE   : [61],
+    TWO   : [62],
+    THREE : [63],
+    FOUR  : [64],
+    FIVE  : [65],
+    DOWN  : [66],
+    SIX   : [67],
+    SEVEN : [68],
+    EIGHT : [69],
+    NINE  : [70],
+    ZERO  : [71],
 }
 // these are CC values
 // make sure they are below 60, so that there is no collision with the 
