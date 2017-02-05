@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [[ "$1" == "start" ]]
+then
+    killall -9 sooperlooper >/dev/null 2>&1
+    nohup $DIR/patched_sooperlooper/src/sooperlooper -L $DIR/config/transport.slsess -m sooperlooper.slb > $DIR/log 2>&1 &
+    echo sooperlooper started
+fi
+if [[ "$1" == "stop" ]]
+then
+    killall -9 sooperlooper >/dev/null 2>&1
+    echo sooperlooper stopped
+fi

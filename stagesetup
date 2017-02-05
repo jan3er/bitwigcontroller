@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [[ "$1" == "start" ]]
+then
+    echo starting stagesetup
+
+    echo load virtual midi
+    sudo modprobe snd-virmidi midi_devs=3
+
+    echo setup and start jack
+    #setup and start jack
+    jack_control stop
+    jack_control eps realtime true
+    jack_control ds alsa
+    jack_control dps device hw:0 
+    jack_control dps capture hw:0 
+    jack_control dps playback hw:0 
+    jack_control dps rate 44100
+    jack_control dps nperiods 2
+    jack_control dps period 1024 
+    jack_control start
+    sudo schedtool -R -p 80 `pidof jackdbus`
+
+    echo start bitwig
+    PROJECT="projects/jam/jam.bwproject"
+    nohup bitwig-studio "$PROJECT" >/dev/null 2>&1 &
+
+    echo start sooperlooper
+    $DIR/sooperlooper/sooperlooper start
+
+    echo start patchbay
+    $DIR/patchbay/patchbay start
+fi
+
+if [[ "$1" == "stop" ]]
+then
+    echo stopping stagesetup
+
+    echo stop sooperlooper
+    $DIR/sooperlooper/sooperlooper stop
+
+    echo stop patchbay
+    $DIR/patchbay/patchbay stop
+
+    echo stop bitwig
+    killall -9 bitwig-studio
+
+    echo stop jack
+    jack_control stop
+fi
