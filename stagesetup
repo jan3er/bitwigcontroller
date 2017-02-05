@@ -17,7 +17,7 @@ then
     jack_control dps playback hw:0 
     jack_control dps rate 44100
     jack_control dps nperiods 2
-    jack_control dps period 1024 
+    jack_control dps period 256
     jack_control start
     sudo schedtool -R -p 80 `pidof jackdbus`
 
@@ -27,6 +27,9 @@ then
 
     echo start sooperlooper
     $DIR/sooperlooper/sooperlooper start
+
+    echo start gui
+    $DIR/gui/gui start
 
     echo start patchbay
     $DIR/patchbay/patchbay start

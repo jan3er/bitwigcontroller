@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [[ "$1" == "start" ]]
+then
+    #killall -9 sooperlooper >/dev/null 2>&1
+    cd $DIR
+    nohup npm run app >/dev/null 2>&1 &
+    echo gui started
+fi
+if [[ "$1" == "stop" ]]
+then
+    #killall -9 sooperlooper >/dev/null 2>&1
+    echo gui stopped
+fi
