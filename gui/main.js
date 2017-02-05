@@ -58,22 +58,36 @@ function createWindow () {
                 address: "/ping",
                 args: [url, "/pingack"]
             });
-            udpPortLooper.send( {
-                address: "/sl/0/register_auto_update",
-                args: ["state", {type:"i", value:100}, url, "/sl/state"]
-            });
-            udpPortLooper.send( {
-                address: "/sl/0/register_auto_update",
-                args: ["loop_pos", {type:"i", value:100}, url, "/sl/loop_pos"]
-            });
-            udpPortLooper.send( {
-                address: "/sl/0/register_auto_update",
-                args: ["loop_len", {type:"i", value:100}, url, "/sl/loop_len"]
-            });
-            udpPortLooper.send( {
-                address: "/register_update",
-                args: ["tap_tempo", url, "/sl/tap_tempo"]
-            });
+            for(var i = 0; i < 4; i++) {
+                udpPortLooper.send( {
+                    address: "/sl/"+i+"/get",
+                    args: ["state", url, "/sl/"+i+"/state"]
+                });
+                udpPortLooper.send( {
+                    address: "/sl/"+i+"/get",
+                    args: ["loop_pos", url, "/sl/"+i+"/loop_pos"]
+                });
+                udpPortLooper.send( {
+                    address: "/sl/"+i+"/get",
+                    args: ["loop_len", url, "/sl/"+i+"/loop_len"]
+                });
+                udpPortLooper.send( {
+                    address: "/sl/"+i+"/register_auto_update",
+                    args: ["state", {type:"i", value:100}, url, "/sl/"+i+"/state"]
+                });
+                udpPortLooper.send( {
+                    address: "/sl/"+i+"/register_auto_update",
+                    args: ["loop_pos", {type:"i", value:100}, url, "/sl/"+i+"/loop_pos"]
+                });
+                udpPortLooper.send( {
+                    address: "/sl/"+i+"/register_auto_update",
+                    args: ["loop_len", {type:"i", value:100}, url, "/sl/"+i+"/loop_len"]
+                });
+            }
+            //udpPortLooper.send( {
+            //    address: "/register_update",
+            //    args: ["tap_tempo", url, "/sl/tap_tempo"]
+            //});
 
             //udpPortLooper.send( {
                 //address: "/get",
@@ -91,7 +105,7 @@ function createWindow () {
         });
 
         udpPortLooper.on("message", function (oscMessage) {
-            console.log("looper: ", oscMessage);
+            //console.log("looper: ", oscMessage);
             win.webContents.send('osc' , oscMessage);
         });
         //var count = 0;
