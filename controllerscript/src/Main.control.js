@@ -12,7 +12,7 @@ load ("SimpleMode.js");
 
 function init()
 {
-    setupSimpleMode();
+    setup();
 }
 
 function exit()

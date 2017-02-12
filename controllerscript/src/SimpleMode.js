@@ -1,10 +1,14 @@
-
 function SimpleMode(){
 
-    //first entry: number of siblings in ith level
-    //second entry: number of devices per track in ith level
-    this.tracksPerLevel  = [[5,5], [8,1], [5,1]];
-    this.maxBank         = 10;
+    this.numBanks = 8;
+    this.numTracksPerBank = 8;
+    this.numTracksPerInstrument  = 5;
+    this.numDevices = 3;
+    this.treeSize  = [
+        [this.numBanks,this.numDevices],
+        [this.numTracksPerBank, this.numDevices],
+        [this.numTracksPerInstrument, this.numDevices],
+        [0,this.numDevices]];
 
     this.instTrackIdx    = 0;
     this.instBankIdx     = 0;
@@ -17,7 +21,7 @@ function SimpleMode(){
     this.listenToPort = 8000;
 
     this.im  = new InputManager();
-    this.bw  = new BitwigWrapper(this.im, this.tracksPerLevel); 
+    this.bw  = new BitwigWrapper(this.im, this.treeSize); 
 
     this.addMidiCallbacks();
     this.addBitwigCallbacks();
@@ -43,20 +47,19 @@ SimpleMode.prototype.selectTrack = function(instTrackIdx) {
     this.sendCurrentInstrumentAndBank();
 }
 SimpleMode.prototype.selectNextBank = function(step) {
-    this.visibleBankIdx = Math.max(0, Math.min(this.maxBank, this.visibleBankIdx + step));;
+    this.visibleBankIdx = Math.max(0, Math.min(this.numBanks-1, this.visibleBankIdx + step));;
     host.showPopupNotification("select bank " + this.visibleBankIdx);
     this.sendCurrentInstrumentAndBank();
 }
 
 SimpleMode.prototype.sendCurrentInstrumentAndBank = function() {
-    var nextBank = Math.max(0, Math.min(this.maxBank, this.visibleBankIdx + 1));;
-    var prevBank = Math.max(0, Math.min(this.maxBank, this.visibleBankIdx - 1));;
+    var nextBank = Math.max(0, Math.min(this.numBanks-1, this.visibleBankIdx + 1));;
+    var prevBank = Math.max(0, Math.min(this.numBanks-1, this.visibleBankIdx - 1));;
     OSCSendMessage(this.sendToHost, this.sendToPort, "/bw/currInst", [this.instBankIdx, this.instTrackIdx]);
     OSCSendMessage(this.sendToHost, this.sendToPort, "/bw/currBank", this.visibleBankIdx);
     OSCSendMessage(this.sendToHost, this.sendToPort, "/bw/nextBank", nextBank);
     OSCSendMessage(this.sendToHost, this.sendToPort, "/bw/prevBank", prevBank);
     OSCSendMessage(this.sendToHost, this.sendToPort, "/bw/knobDevice", this.knobDevice);
-
 }
 
 SimpleMode.prototype.addBitwigCallbacks = function() {
@@ -94,17 +97,20 @@ SimpleMode.prototype.addOSCCallbacks = function() {
         }
     });
 }
-SimpleMode.prototype.onKnobRibbon = function(macroIdx, value){
-    if(this.knobDevice == 0 || macroIdx > 3) {
-        this.bw.trackWrapper.setMacroValue([this.instBankIdx, this.instTrackIdx], false, true, 0, macroIdx, value);
-    } else {
-        this.bw.trackWrapper.setMacroValue([this.instBankIdx], false, false, this.knobDevice-1, macroIdx, value);
-    }
+SimpleMode.prototype.setMacro = function(macroIdx, value){
+    if(this.knobDevice == 0) this.bw.trackWrapper.setMacroValue([this.instBankIdx, this.instTrackIdx], false, true, 0, macroIdx, value);
+    if(this.knobDevice == 1) this.bw.trackWrapper.setMacroValue([this.instBankIdx], false, false, 0, macroIdx, value);
+    if(this.knobDevice == 2) this.bw.trackWrapper.setMacroValue([this.instBankIdx], false, false, 1, macroIdx, value);
+    if(this.knobDevice == 3) this.bw.trackWrapper.setMacroValue([this.instBankIdx], false, false, 2, macroIdx, value);
+    if(this.knobDevice == 4) this.bw.trackWrapper.setMacroValue([], false, false, 0, macroIdx, value);
+    if(this.knobDevice == 5) this.bw.trackWrapper.setMacroValue([], false, false, 1, macroIdx, value);
+    if(this.knobDevice == 6) this.bw.trackWrapper.setMacroValue([], false, false, 2, macroIdx, value);
 }
 
 SimpleMode.prototype.addMidiCallbacks = function() {
-
     var obj = this;
+
+    //nobels
     this.im.addButtonCallback( Nobels.UP,    ButtonAction.tap, function(){ obj.bw.transportWrapper.togglePlay();});
     this.im.addButtonCallback( Nobels.DOWN,  ButtonAction.tap, function(){ obj.bw.transportWrapper.tapTempo();});
     this.im.addButtonCallback( Nobels.ONE,   ButtonAction.tap, function(){ obj.selectNextBank(1);});
@@ -118,47 +124,29 @@ SimpleMode.prototype.addMidiCallbacks = function() {
     this.im.addButtonCallback( Nobels.NINE,  ButtonAction.tap, function(){ obj.selectTrack(6);});
     this.im.addButtonCallback( Nobels.ZERO,  ButtonAction.tap, function(){ obj.selectTrack(7);});
 
-
     // volume slider
     obj.im.addFaderCallback(Keytar.SLIDER,  function(value){ obj.bw.trackWrapper.setVolume(obj.instBankIdx, obj.instTrackIdx, value); });
 
-    // modify parameters
-    //this.im.addFaderCallback(Keytar.KNOB1,   function(value){ obj.bw.trackWrapper.setMacroValue([obj.instBankIdx, obj.instTrackIdx], 0, 0, value);});
-    //this.im.addFaderCallback(Keytar.KNOB2,   function(value){ obj.bw.trackWrapper.setMacroValue([obj.instBankIdx, obj.instTrackIdx], 0, 1, value);});
-    //this.im.addFaderCallback(Keytar.KNOB3,   function(value){ obj.bw.trackWrapper.setMacroValue([obj.instBankIdx, obj.instTrackIdx], 0, 2, value);});
-    //this.im.addFaderCallback(Keytar.RIBBON1, function(value){ obj.bw.trackWrapper.setMacroValue([obj.instBankIdx, obj.instTrackIdx], 0, 4, value);});
-    //this.im.addFaderCallback(Keytar.RIBBON2, function(value){ obj.bw.trackWrapper.setMacroValue([obj.instBankIdx, obj.instTrackIdx], 0, 5, value);});
-    //this.im.addFaderCallback(Keytar.RIBBON3, function(value){ obj.bw.trackWrapper.setMacroValue([obj.instBankIdx, obj.instTrackIdx], 0, 6, value);});
-    this.im.addFaderCallback(Keytar.KNOB1,   function(value){ obj.onKnobRibbon(0, value)});
-    this.im.addFaderCallback(Keytar.KNOB2,   function(value){ obj.onKnobRibbon(1, value)});
-    this.im.addFaderCallback(Keytar.KNOB3,   function(value){ obj.onKnobRibbon(2, value)});
-    this.im.addFaderCallback(Keytar.RIBBON1, function(value){ obj.onKnobRibbon(4, value)});
-    this.im.addFaderCallback(Keytar.RIBBON2, function(value){ obj.onKnobRibbon(5, value)});
-    this.im.addFaderCallback(Keytar.RIBBON3, function(value){ obj.onKnobRibbon(6, value)});
+    //knob ribbon
+    this.im.addFaderCallback(Keytar.KNOB1,   function(value){ obj.setMacro(0, value)});
+    this.im.addFaderCallback(Keytar.KNOB2,   function(value){ obj.setMacro(1, value)});
+    this.im.addFaderCallback(Keytar.KNOB3,   function(value){ obj.setMacro(2, value)});
+    this.im.addFaderCallback(Keytar.RIBBON1, function(value){ obj.setMacro(4, value)});
+    this.im.addFaderCallback(Keytar.RIBBON2, function(value){ obj.setMacro(5, value)});
+    this.im.addFaderCallback(Keytar.RIBBON3, function(value){ obj.setMacro(6, value)});
 
     //keytar buttons
-    this.im.addButtonCallback( Keytar.BUTTON5, ButtonAction.tap, function(){ 
-        obj.bw.transportWrapper.tapTempo();
-    });
-    this.im.addButtonCallback( Keytar.BUTTON6, ButtonAction.tap, function(){ 
-        obj.bw.transportWrapper.togglePlay();
-    });
-
     this.im.addButtonCallback( Keytar.BUTTON1, ButtonAction.tap, function(){ obj.selectKnobDevice(0);});
     this.im.addButtonCallback( Keytar.BUTTON2, ButtonAction.tap, function(){ obj.selectKnobDevice(1);});
     this.im.addButtonCallback( Keytar.BUTTON3, ButtonAction.tap, function(){ obj.selectKnobDevice(2);});
     this.im.addButtonCallback( Keytar.BUTTON4, ButtonAction.tap, function(){ obj.selectKnobDevice(3);});
-    //this.im.addButtonCallback( Keytar.BUTTON2, ButtonAction.tap, function(){ obj.selectTrack(1);});
-    //this.im.addButtonCallback( Keytar.BUTTON3, ButtonAction.tap, function(){ obj.selectTrack(2);});
-    //this.im.addButtonCallback( Keytar.BUTTON4, ButtonAction.tap, function(){ obj.selectTrack(3);});
-    //this.im.addButtonCallback( Keytar.BUTTON6, ButtonAction.tap, function(){ obj.selectTrack(5);});
-    //this.im.addButtonCallback(Keytar.BUTTON7, ButtonAction.tap, function(){ obj.bw.trackWrapper.toggleMacroValue(obj.currentTrack(), 3);});
-    //this.im.addButtonCallback(Keytar.BUTTON8, ButtonAction.tap, function(){ obj.bw.trackWrapper.toggleMacroValue(obj.currentTrack(), 7);});
+    this.im.addButtonCallback( Keytar.BUTTON5, ButtonAction.tap, function(){ obj.bw.trackWrapper.killStuckNote();});
+    this.im.addButtonCallback( Keytar.BUTTON6, ButtonAction.tap, function(){ obj.selectKnobDevice(4);});
+    this.im.addButtonCallback( Keytar.BUTTON7, ButtonAction.tap, function(){ obj.selectKnobDevice(5);});
+    this.im.addButtonCallback( Keytar.BUTTON8, ButtonAction.tap, function(){ obj.selectKnobDevice(6);});
 }
 
-
-
-function setupSimpleMode() {
+function setup() {
     var simpleMode = new SimpleMode();
 }
 

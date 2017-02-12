@@ -22,7 +22,7 @@ then
     sudo schedtool -R -p 80 `pidof jackdbus`
 
     echo start bitwig
-    PROJECT="projects/jam/jam.bwproject"
+    PROJECT=$DIR/"projects/jam/jam.bwproject"
     nohup bitwig-studio "$PROJECT" >/dev/null 2>&1 &
 
     echo start sooperlooper

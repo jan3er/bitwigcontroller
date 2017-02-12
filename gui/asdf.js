@@ -1,31 +1,28 @@
 const {ipcRenderer} = require('electron')
 
-function startListening(state, buttons, looper) {
-}
-
-
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 function State() {
     this.data = [];
 }
 State.prototype.eventHandler = function(url, value) {
     var url = url.split("/");
     url.shift();
-
     var currentNode = this.data;
     for(var i = 0; i < url.length-1; i++) {
         if(currentNode[url[i]] === undefined) {
             currentNode[url[i]] = [];      
         } 
         if (currentNode[url[i]].constructor !== Array) {
-            println("ERROR IN OBSERVERWRAPPER");
+            console.log("ERROR IN OBSERVERWRAPPER");
         }
         currentNode = currentNode[url[i]];
     }
     currentNode[url[url.length-1]] = value;
 }
 State.prototype.dump = function() {
-    //return [{path: "asdf", value: "huuu"}];
     return function collect(path, root) {
         if (root.constructor !== Array) {
             return [{path : path, value : root}]
@@ -50,33 +47,40 @@ State.prototype.get = function(path) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 function Parameter() {
-    this.volume = document.getElementById("volume");
-    this.macroName = [];
-    this.macroValue = [];
-    for(var i = 0; i < 8; i++) {
-        this.macroName[i] = document.getElementById("macroName"+i);
-        this.macroValue[i] = document.getElementById("macroValue"+i);
-    }
-    this.asdfName = [];
-    this.asdfValue = [];
-    for(var j = 0; j < 8; j++) {
-        this.asdfName[j] = [];
-        this.asdfValue[j] = [];
-        for(var i = 0; i < 8; i++) {
-            this.asdfName[j][i] = document.getElementById("asdfName"+j+"-"+i);
-            this.asdfValue[j][i] = document.getElementById("asdfValue"+j+"-"+i);
-        }
-    }
     this.color = {
-        activeFG    : "#0000bb",
-        activeBG    : "#aaaadd",
-        passiveFG   : "#999999",
-        passiveBG   : "#dddddd",
-        alwaysFG    : "#007700",
-        alwaysBG    : "#aaccaa",
+        active       : ["#0000cc", "#aaaadd"],
+        passive      : ["#777777", "#dddddd"],
     }
+}
+
+Parameter.prototype.setBar = function(id, name, amount, color) {
+    var root = document.getElementById(id);
+    root.innerHTML = "<td>"+name+"</td><td><div class=\"barOuter\"><div class=\"barInner\"></div> </div></td>";
+    var inner = root.children[1].children[0].children[0];
+    var outer = root.children[1].children[0];
+    inner.style.width = amount;
+    inner.style.background = color[0];
+    outer.style.background = color[1];
+}
+
+Parameter.prototype.setManyBars = function(state, prefix, path, active) {
+    this.setBar(prefix+"0", 
+            state.get(["bw","tracks"].concat(path).concat(["macro",0,"name"])),
+            state.get(["bw","tracks"].concat(path).concat(["macro",0,"amount"])),
+            active ? this.color.active : this.color.passive);
+    this.setBar(prefix+"1", 
+            state.get(["bw","tracks"].concat(path).concat(["macro",1,"name"])),
+            state.get(["bw","tracks"].concat(path).concat(["macro",1,"amount"])),
+            active ? this.color.active : this.color.passive);
+    this.setBar(prefix+"2", 
+            state.get(["bw","tracks"].concat(path).concat(["macro",2,"name"])),
+            state.get(["bw","tracks"].concat(path).concat(["macro",2,"amount"])),
+            active ? this.color.active : this.color.passive);
+    this.setBar(prefix+"3", 
+            state.get(["bw","tracks"].concat(path).concat(["macro",4,"name"])),
+            state.get(["bw","tracks"].concat(path).concat(["macro",4,"amount"])),
+            active ? this.color.active : this.color.passive);
 }
 
 Parameter.prototype.update = function(state) {
@@ -84,52 +88,20 @@ Parameter.prototype.update = function(state) {
     var knobDevice        = state.get(["bw","knobDevice"]);
     if(currInst !== undefined && knobDevice !== undefined)
     {
-        this.volume.firstChild.style.width = state.get(["bw","tracks",currInst[0],currInst[1],"volume"]);
-        for(var i = 0; i < 8; i++) {
-            if(this.macroName[i] != null)  this.macroName[i].innerHTML    = state.get(["bw","tracks",currInst[0],currInst[1],"device",0, "macro",i,"name"]);
-            if(this.macroValue[i] != null) this.macroValue[i].firstChild.style.width = state.get(["bw","tracks",currInst[0],currInst[1],"device",0, "macro",i,"amount"]);
-        }
-        for(var j = 0; j < 8; j++) {
-            for(var i = 0; i < 8; i++) {
-                if(this.asdfName[j][i] != null)  this.asdfName[j][i].innerHTML    = state.get(["bw","tracks",currInst[0],"device",j,"macro",i,"name"]);
-                if(this.asdfValue[j][i] != null) this.asdfValue[j][i].firstChild.style.width = state.get(["bw","tracks",currInst[0],"device",j,"macro",i,"amount"]);
-            }
-        }
-
-
-        this.volume.firstChild.style.background = this.color.activeFG;
-        this.volume.style.background = this.color.activeBG;
-        for(var i = 4; i < 8; i++) {
-            if(this.macroValue[i] != null) this.macroValue[i].firstChild.style.background = this.color.activeFG;
-            if(this.macroValue[i] != null) this.macroValue[i].style.background = this.color.activeBG;
-        }
-        for(var i = 0; i < 4; i++) {
-            if(knobDevice == 0) {
-                if(this.macroValue[i] != null) this.macroValue[i].firstChild.style.background = this.color.activeFG;
-                if(this.macroValue[i] != null) this.macroValue[i].style.background = this.color.activeBG;
-            } else { 
-                if(this.macroValue[i] != null) this.macroValue[i].firstChild.style.background = this.color.passiveFG;
-                if(this.macroValue[i] != null) this.macroValue[i].style.background = this.color.passiveBG;
-            }
-        }
-        for(var j = 0; j < 8; j++) {
-            for(var i = 0; i < 4; i++) {
-                if(knobDevice-1 == j) {
-                    if(this.asdfValue[j][i] != null) this.asdfValue[j][i].firstChild.style.background = this.color.activeFG;
-                    if(this.asdfValue[j][i] != null) this.asdfValue[j][i].style.background = this.color.activeBG;
-                } else { 
-                    if(this.asdfValue[j][i] != null) this.asdfValue[j][i].firstChild.style.background = this.color.passiveFG;
-                    if(this.asdfValue[j][i] != null) this.asdfValue[j][i].style.background = this.color.passiveBG;
-                }
-            }
-        }
+        this.setBar("volume", "Volume", state.get(["bw","tracks",currInst[0],currInst[1],"volume"]), this.color.active);
+        this.setManyBars(state, "m0", [currInst[0], currInst[1], "device", 0], knobDevice == 0);
+        this.setManyBars(state, "m1", [currInst[0], "device", 0], knobDevice == 1);
+        this.setManyBars(state, "m2", [currInst[0], "device", 1], knobDevice == 2);
+        this.setManyBars(state, "m3", [currInst[0], "device", 2], knobDevice == 3);
+        this.setManyBars(state, "m4", ["device", 0], knobDevice == 4);
+        this.setManyBars(state, "m5", ["device", 1], knobDevice == 5);
+        this.setManyBars(state, "m6", ["device", 2], knobDevice == 6);
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 function Track() {
     this.tapTempo = document.getElementById("tapTempo");
@@ -150,8 +122,6 @@ function Track() {
         cold       : "#000000",
         hot        : "#0000bb",
     }
-    
-    //-----------------------------------------------------
     
     this.tapTempo.innerHTML = "Tap Tempo";
     this.playback.innerHTML = "playback";
@@ -176,21 +146,6 @@ function Track() {
         this.track[i].style.borderColor = this.color.border;
     }
 }
-Track.prototype.bwIsPlaying = function() {
-    this.keytarPlayback.style.background = this.color.cold;
-    this.keytarPlayback.innerHTML = "Playing";
-}
-Track.prototype.bwIsNotPlaying  = function() {
-    this.keytarPlayback.style.background = this.color.cold;
-    this.keytarPlayback.innerHTML = "Stopped";
-}
-Track.prototype.selectTrack = function(trackIdx) {
-    for(var i = 0; i < 5; i++) {
-        this.track[i].style.background = this.color.cold;
-    }
-        this.track[trackIdx].style.background = this.color.hot;
-}
-
 
 Track.prototype.update = function(state) {
     var currInst          = state.get(["bw","currInst"]);
@@ -267,13 +222,11 @@ function Looper() {
         offline : "#dddddd",
     }
 
-    this.lastFrac    = [];
+    this.lastFrac = [];
     this.lastFrac[0] = 0;
     this.lastFrac[1] = 0;
     this.lastFrac[2] = 0;
     this.lastFrac[3] = 0;
-
-    //--------------------------
 
     for(var i = 0; i < this.numLoops; i++) {
         if(this.undo[i] != null) this.undo[i].innerHTML = "undo " + i;

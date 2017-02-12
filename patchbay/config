@@ -15,10 +15,12 @@ jack_connect "sooperlooper:common_out_2"     "Bitwig Studio:Looper Input-R"
 #connect keytar und pedal to bitwig
 aconnect "Vortex Wireless:Vortex Wireless MIDI 1" "Virtual Raw MIDI 1-0:VirMIDI 1-0"
 aconnect "MIDIMATE II:0"                          "Virtual Raw MIDI 1-1:VirMIDI 1-1"
-aconnect "MIDIMATE II:1"                          "Virtual Raw MIDI 1-1:VirMIDI 1-1"
 
 #connect pedal to sooperlooper
 aconnect "MIDIMATE II:0"                          "sooperlooper:sooperlooper"
-aconnect "MIDIMATE II:1"                          "sooperlooper:sooperlooper"
-#aconnect "Virtual Raw MIDI 1-2:VirMIDI 1-2"       "sooperlooper:sooperlooper"
+
+#either use the second midi cable as input to looper and bitwig or as clock output
+#aconnect "MIDIMATE II:1"                          "sooperlooper:sooperlooper"
+#aconnect "MIDIMATE II:1"                          "Virtual Raw MIDI 1-1:VirMIDI 1-1"
+aconnect "Virtual Raw MIDI 1-2:VirMIDI 1-2"       "MIDIMATE II:1"
 
