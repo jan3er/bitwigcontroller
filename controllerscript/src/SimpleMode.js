@@ -40,7 +40,7 @@ SimpleMode.prototype.selectKnobDevice = function(knobDevice) {
     this.sendCurrentInstrumentAndBank();
 }
 SimpleMode.prototype.selectTrack = function(instTrackIdx) {
-    this.instBankIdx  = this.visibleBankIdx;;
+    this.instBankIdx  = this.visibleBankIdx;
     this.instTrackIdx = instTrackIdx;
     host.showPopupNotification("select instrument (" + this.instBankIdx + ", " + this.instTrackIdx + ")");
     this.bw.trackWrapper.armTrack([this.instBankIdx, this.instTrackIdx], false, true);
@@ -67,6 +67,12 @@ SimpleMode.prototype.addBitwigCallbacks = function() {
     obj.bw.observerWrapper.registerCallback(function(path,value) {
         var pathString = "/bw/" + path.join("/");
         OSCSendMessage(obj.sendToHost, obj.sendToPort, pathString, value);
+
+        //react to track selections in gui
+        if(path[3] == "selected" && value == true) {
+            obj.visibleBankIdx = Math.max(0, Math.min(obj.numBanks-1, path[1]));
+            obj.selectTrack(path[2]);
+        }
     });
     //host.scheduleTask(function(){
     //}, [], 2000);
