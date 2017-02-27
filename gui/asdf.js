@@ -135,6 +135,8 @@ function Track() {
     this.playback.style.background = this.color.cold;
     this.nextBank.style.background = this.color.bankSelect;
     this.prevBank.style.background = this.color.bankSelect;
+    this.playback.style.background = this.color.bankSelect;
+    this.tapTempo.style.background = this.color.bankSelect;
     for(var i = 0; i < this.numTracks; i++) {
         this.track[i].style.background = this.color.cold;
     }

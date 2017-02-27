@@ -8,21 +8,38 @@ then
     sudo modprobe snd-virmidi midi_devs=3
 
     echo setup and start jack
-    #setup and start jack
-    jack_control stop
-    jack_control eps realtime true
-    jack_control ds alsa
-    jack_control dps device hw:0 
-    jack_control dps capture hw:0 
-    jack_control dps playback hw:0 
-    jack_control dps rate 44100
-    jack_control dps nperiods 2
-    jack_control dps period 256
+    if [[ "$2" != "external" ]]
+    then
+        echo "start jack internal"
+        CARD=$(aplay -l | grep "ALC293 Analog"| head -c 6 | tail -c 1)
+        jack_control stop
+        jack_control eps realtime true
+        jack_control ds alsa
+        jack_control dps device hw:$CARD
+        jack_control dps capture hw:$CARD
+        jack_control dps playback hw:$CARD
+        jack_control dps rate 44100
+        jack_control dps nperiods 2
+        jack_control dps period 512
+    else
+        echo "start jack external"
+        CARD=$(aplay -l | grep MobilePre | head -c 6 | tail -c 1)
+        jack_control stop
+        jack_control eps realtime true
+        jack_control ds alsa
+        jack_control dps device hw:$CARD
+        jack_control dps capture hw:$CARD
+        jack_control dps playback hw:$CARD
+        jack_control dps rate 44100
+        jack_control dps nperiods 2
+        jack_control dps period 256
+
+    fi
     jack_control start
     sudo schedtool -R -p 80 `pidof jackdbus`
 
     echo start bitwig
-    PROJECT=$DIR/"projects/jam/jam.bwproject"
+    PROJECT=$DIR/"projects/jam2/jam2.bwproject"
     nohup bitwig-studio "$PROJECT" >/dev/null 2>&1 &
 
     echo start sooperlooper
@@ -39,14 +56,17 @@ if [[ "$1" == "stop" ]]
 then
     echo stopping stagesetup
 
+    echo stop bitwig
+    killall -9 bitwig-studio
+
     echo stop sooperlooper
     $DIR/sooperlooper/sooperlooper stop
 
+    echo stop gui
+    $DIR/gui/gui stop
+
     echo stop patchbay
     $DIR/patchbay/patchbay stop
-
-    echo stop bitwig
-    killall -9 bitwig-studio
 
     echo stop jack
     jack_control stop

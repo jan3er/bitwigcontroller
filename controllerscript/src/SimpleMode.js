@@ -111,18 +111,18 @@ SimpleMode.prototype.addMidiCallbacks = function() {
     var obj = this;
 
     //nobels
-    this.im.addButtonCallback( Nobels.UP,    ButtonAction.tap, function(){ obj.bw.transportWrapper.togglePlay();});
-    this.im.addButtonCallback( Nobels.DOWN,  ButtonAction.tap, function(){ obj.bw.transportWrapper.tapTempo();});
-    this.im.addButtonCallback( Nobels.ONE,   ButtonAction.tap, function(){ obj.selectNextBank(1);});
-    this.im.addButtonCallback( Nobels.SIX,   ButtonAction.tap, function(){ obj.selectNextBank(-1);});
-    this.im.addButtonCallback( Nobels.TWO,   ButtonAction.tap, function(){ obj.selectTrack(0);});
-    this.im.addButtonCallback( Nobels.THREE, ButtonAction.tap, function(){ obj.selectTrack(1);});
-    this.im.addButtonCallback( Nobels.FOUR,  ButtonAction.tap, function(){ obj.selectTrack(2);});
-    this.im.addButtonCallback( Nobels.FIVE,  ButtonAction.tap, function(){ obj.selectTrack(3);});
-    this.im.addButtonCallback( Nobels.SEVEN, ButtonAction.tap, function(){ obj.selectTrack(4);});
-    this.im.addButtonCallback( Nobels.EIGHT, ButtonAction.tap, function(){ obj.selectTrack(5);});
-    this.im.addButtonCallback( Nobels.NINE,  ButtonAction.tap, function(){ obj.selectTrack(6);});
-    this.im.addButtonCallback( Nobels.ZERO,  ButtonAction.tap, function(){ obj.selectTrack(7);});
+    this.im.addButtonCallback( Nobels.FIVE,  ButtonAction.tap, function(){ obj.bw.transportWrapper.togglePlay();});
+    this.im.addButtonCallback( Nobels.ZERO,  ButtonAction.tap, function(){ obj.bw.transportWrapper.tapTempo();});
+    this.im.addButtonCallback( Nobels.UP,    ButtonAction.tap, function(){ obj.selectNextBank(1);});
+    this.im.addButtonCallback( Nobels.DOWN,  ButtonAction.tap, function(){ obj.selectNextBank(-1);});
+    this.im.addButtonCallback( Nobels.ONE,   ButtonAction.tap, function(){ obj.selectTrack(0);});
+    this.im.addButtonCallback( Nobels.TWO,   ButtonAction.tap, function(){ obj.selectTrack(1);});
+    this.im.addButtonCallback( Nobels.THREE, ButtonAction.tap, function(){ obj.selectTrack(2);});
+    this.im.addButtonCallback( Nobels.FOUR,  ButtonAction.tap, function(){ obj.selectTrack(3);});
+    this.im.addButtonCallback( Nobels.SIX,   ButtonAction.tap, function(){ obj.selectTrack(4);});
+    this.im.addButtonCallback( Nobels.SEVEN, ButtonAction.tap, function(){ obj.selectTrack(5);});
+    this.im.addButtonCallback( Nobels.EIGHT, ButtonAction.tap, function(){ obj.selectTrack(6);});
+    this.im.addButtonCallback( Nobels.NINE,  ButtonAction.tap, function(){ obj.selectTrack(7);});
 
     // volume slider
     obj.im.addFaderCallback(Keytar.SLIDER,  function(value){ obj.bw.trackWrapper.setVolume(obj.instBankIdx, obj.instTrackIdx, value); });

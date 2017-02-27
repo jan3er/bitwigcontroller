@@ -20,7 +20,7 @@ function createWindow () {
     }))
 
     // Open the DevTools.
-    win.webContents.openDevTools()
+    //win.webContents.openDevTools()
 
     // Emitted when the window is closed.
     win.on('closed', () => {
@@ -84,15 +84,6 @@ function createWindow () {
                     args: ["loop_len", {type:"i", value:100}, url, "/sl/"+i+"/loop_len"]
                 });
             }
-            //udpPortLooper.send( {
-            //    address: "/register_update",
-            //    args: ["tap_tempo", url, "/sl/tap_tempo"]
-            //});
-
-            //udpPortLooper.send( {
-                //address: "/get",
-                //args: ["tempo", url, "/sl/tap_tempooooooooooooooooooo"]
-            //});
         });
 
         udpPortBitwig.on("ready", function () {

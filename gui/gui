@@ -2,13 +2,13 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [[ "$1" == "start" ]]
 then
-    #killall -9 sooperlooper >/dev/null 2>&1
+    ps -ef | grep "gui/node_modules/" | awk '{print $2}' | xargs kill -9
     cd $DIR
     nohup npm run app >/dev/null 2>&1 &
     echo gui started
 fi
 if [[ "$1" == "stop" ]]
 then
-    #killall -9 sooperlooper >/dev/null 2>&1
+    ps -ef | grep "gui/node_modules/" | awk '{print $2}' | xargs kill -9
     echo gui stopped
 fi
