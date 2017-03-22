@@ -23,7 +23,7 @@ then
         jack_control dps period 512
     else
         echo "start jack external"
-        CARD=$(aplay -l | grep MobilePre | head -c 6 | tail -c 1)
+        CARD=$(aplay -l | grep "MobilePre" | head -c 6 | tail -c 1)
         jack_control stop
         jack_control eps realtime true
         jack_control ds alsa
@@ -33,7 +33,11 @@ then
         jack_control dps rate 44100
         jack_control dps nperiods 2
         jack_control dps period 256
+    fi
 
+    if [ -z "$CARD" ]; then
+        echo ERROR CANNOT FIND SOUNDCARD
+        exit
     fi
     jack_control start
     sudo schedtool -R -p 80 `pidof jackdbus`
@@ -50,6 +54,9 @@ then
 
     echo start patchbay
     $DIR/patchbay/patchbay start
+
+    echo keep display alive
+    sleep 1; xset s off -dpms
 fi
 
 if [[ "$1" == "stop" ]]
