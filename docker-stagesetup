@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+#usage: docker-stagesetup start jam.bwproject external
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [[ "$1" == "start" ]]
+then
+    echo starting stagesetup
+
+    echo setup and start jack
+    if [[ "$3" != "external" ]]
+    then
+        echo "start jack internal"
+        CARD=$(aplay -l | grep "ALC293 Analog"| head -c 6 | tail -c 1)
+        jack_control stop
+        jack_control eps realtime true
+        jack_control ds alsa
+        jack_control dps device hw:$CARD
+        jack_control dps capture hw:$CARD
+        jack_control dps playback hw:$CARD
+        jack_control dps rate 44100
+        jack_control dps nperiods 2
+        jack_control dps period 512
+    else
+        echo "start jack external"
+        CARD=$(aplay -l | grep "MobilePre" | head -c 6 | tail -c 1)
+        jack_control stop
+        jack_control eps realtime true
+        jack_control ds alsa
+        jack_control dps device hw:$CARD
+        jack_control dps capture hw:$CARD
+        jack_control dps playback hw:$CARD
+        jack_control dps rate 44100
+        jack_control dps nperiods 2
+        jack_control dps period 256
+    fi
+
+    if [ -z "$CARD" ]; then
+        echo ERROR CANNOT FIND SOUNDCARD
+        exit
+    fi
+    jack_control start
+    schedtool -R -p 80 `pidof jackdbus`
+
+    echo start bitwig
+    PROJECT="$2"
+    nohup bitwig-studio "$PROJECT" >/dev/null 2>&1 &
+
+    echo start sooperlooper
+    $DIR/sooperlooper/sooperlooper start
+
+    sleep 5
+    echo start gui
+    $DIR/gui/gui start
+
+    echo start patchbay
+    $DIR/patchbay/patchbay start
+
+    echo keep display alive
+    sleep 1; xset s off -dpms
+fi
+
+if [[ "$1" == "stop" ]]
+then
+    echo stopping stagesetup
+
+    echo stop bitwig
+    killall -9 bitwig-studio
+
+    echo stop sooperlooper
+    $DIR/sooperlooper/sooperlooper stop
+
+    echo stop gui
+    $DIR/gui/gui stop
+
+    echo stop patchbay
+    $DIR/patchbay/patchbay stop
+
+    echo stop jack
+    jack_control stop
+fi
