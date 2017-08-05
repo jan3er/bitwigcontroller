@@ -1,0 +1,3 @@
+[submodule "patched_sooperlooper"]
+    path = sooperlooper/patched_sooperlooper
+	url = git@github.com:jan3er/sooperlooper.git
