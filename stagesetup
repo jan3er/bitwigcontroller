@@ -49,6 +49,7 @@ then
     echo start sooperlooper
     $DIR/sooperlooper/sooperlooper start
 
+    sleep 5
     echo start gui
     $DIR/gui/gui start
 

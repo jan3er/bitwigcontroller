@@ -4,7 +4,7 @@ if [[ "$1" == "start" ]]
 then
     ps -ef | grep "gui/node_modules/" | awk '{print $2}' | xargs kill -9
     cd $DIR
-    nohup npm run app >/dev/null 2>&1 &
+    nohup npm run app >log 2>&1 &
     echo gui started
 fi
 if [[ "$1" == "stop" ]]
