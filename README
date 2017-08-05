@@ -1,0 +1,15 @@
+
+HOW TO SETUP WIRING:
+
+MidiMATE
+    USB           <--> laptop
+    MIDI1 (short) <--> PEDAL MIDI OUT (two tape stripes)
+    MIDI2 (long)  <--> midi clock slave
+
+MIDI patch wire
+    PEDAL MIDI OUT (tape on one knob) <--> PEDAL MIDI IN (two stape stripes)
+
+AUDIO
+    mobile-pre line output ? <--> PA
+    mobile-pre line output ? <--> click
+
