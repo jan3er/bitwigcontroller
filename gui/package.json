@@ -4,12 +4,10 @@
   "main": "main.js",
   "dependencies": {
     "spawn-rx": "2.0.7",
-    "osc": "^2.2.0",
-    "electron": "^1.4.13"
-  },
-  "devDependencies": {
-    "bluebird": "^3.4.7",
-    "electron-rebuild": "^1.5.7"
+    "osc": "2.2.0",
+    "electron": "1.4.13",
+    "bluebird": "3.4.7",
+    "electron-rebuild": "1.5.7"
   },
   "scripts": {
     "app": "node_modules/.bin/electron .",
