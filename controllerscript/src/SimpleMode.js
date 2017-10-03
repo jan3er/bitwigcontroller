@@ -1,6 +1,6 @@
 function SimpleMode(){
 
-    this.numBanks = 8;
+    this.numBanks = 30;
     this.numTracksPerBank = 8;
     this.numTracksPerInstrument  = 5;
     this.numDevices = 3;
