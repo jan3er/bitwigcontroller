@@ -7,7 +7,6 @@ load ("Util.js");
 load ("Input.js");
 load ("BitwigWrapper.js");
 load ("OSC.js");
-load ("CommonLogic.js");
 load ("SimpleMode.js");
 
 function init()

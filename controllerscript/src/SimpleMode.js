@@ -35,6 +35,9 @@ function SimpleMode(){
     }, [], 0);
 }
 SimpleMode.prototype.selectKnobDevice = function(knobDevice) {
+    this.setMacro(4, 0);
+    this.setMacro(5, 0);
+    this.setMacro(6, 0);
     this.knobDevice = knobDevice;
     host.showPopupNotification("select knobDevice " + knobDevice);
     this.sendCurrentInstrumentAndBank();
@@ -42,6 +45,7 @@ SimpleMode.prototype.selectKnobDevice = function(knobDevice) {
 SimpleMode.prototype.selectTrack = function(instTrackIdx) {
     this.instBankIdx  = this.visibleBankIdx;
     this.instTrackIdx = instTrackIdx;
+    this.selectKnobDevice(0);
     host.showPopupNotification("select instrument (" + this.instBankIdx + ", " + this.instTrackIdx + ")");
     this.bw.trackWrapper.armTrack([this.instBankIdx, this.instTrackIdx], false, true);
     this.sendCurrentInstrumentAndBank();
