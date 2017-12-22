@@ -106,14 +106,9 @@ TrackWrapper.prototype.forEachSubtree = function(root, selector, includeParents,
 
 
 TrackWrapper.prototype.armTrack = function(positionInTree, includeParents, includeChildren) {
-    this.killStuckNote();
-    var obj = this;
-    //run this as scheduled task such that all notes are killed before switching
-    host.scheduleTask(function(){
-        obj.forEachSubtree(obj.trackTree, positionInTree, includeParents, includeChildren,
-            function(root) {root.track.getArm().set(true)}, 
-            function(root) {root.track.getArm().set(false)});
-    }, [], 0);
+    this.forEachSubtree(this.trackTree, positionInTree, includeParents, includeChildren,
+        function(root) {root.track.getArm().set(true)}, 
+        function(root) {root.track.getArm().set(false)});
 }
 
 TrackWrapper.prototype.setVolume = function(bankIdx, trackIdx, value) {

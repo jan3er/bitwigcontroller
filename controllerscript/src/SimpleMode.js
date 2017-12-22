@@ -27,6 +27,8 @@ function SimpleMode(){
     this.addBitwigCallbacks();
     this.addOSCCallbacks();
 
+    this.lastMacroValue = [0,0,0,0,0,0,0,0];
+
 
     var obj = this;
     host.scheduleTask(function(){
@@ -35,9 +37,6 @@ function SimpleMode(){
     }, [], 0);
 }
 SimpleMode.prototype.selectKnobDevice = function(knobDevice) {
-    this.setMacro(4, 0);
-    this.setMacro(5, 0);
-    this.setMacro(6, 0);
     this.knobDevice = knobDevice;
     host.showPopupNotification("select knobDevice " + knobDevice);
     this.sendCurrentInstrumentAndBank();
@@ -47,8 +46,16 @@ SimpleMode.prototype.selectTrack = function(instTrackIdx) {
     this.instTrackIdx = instTrackIdx;
     this.selectKnobDevice(0);
     host.showPopupNotification("select instrument (" + this.instBankIdx + ", " + this.instTrackIdx + ")");
-    this.bw.trackWrapper.armTrack([this.instBankIdx, this.instTrackIdx], false, true);
-    this.sendCurrentInstrumentAndBank();
+    this.bw.trackWrapper.killStuckNote();
+    //run this as scheduled task such that all notes are killed before switching
+    var obj = this;
+    host.scheduleTask(function(){
+        obj.bw.trackWrapper.armTrack([obj.instBankIdx, obj.instTrackIdx], false, true);
+        obj.setMacro(4,obj.lastMacroValue[4]);
+        obj.setMacro(5,obj.lastMacroValue[5]);
+        obj.setMacro(5,obj.lastMacroValue[6]);
+        this.sendCurrentInstrumentAndBank();
+    }, [], 0);
 }
 SimpleMode.prototype.selectNextBank = function(step) {
     this.visibleBankIdx = Math.max(0, Math.min(this.numBanks-1, this.visibleBankIdx + step));;
@@ -115,6 +122,7 @@ SimpleMode.prototype.setMacro = function(macroIdx, value){
     if(this.knobDevice == 4) this.bw.trackWrapper.setMacroValue([], false, false, 0, macroIdx, value);
     if(this.knobDevice == 5) this.bw.trackWrapper.setMacroValue([], false, false, 1, macroIdx, value);
     if(this.knobDevice == 6) this.bw.trackWrapper.setMacroValue([], false, false, 2, macroIdx, value);
+    this.lastMacroValue[macroIdx] = value;
 }
 
 SimpleMode.prototype.addMidiCallbacks = function() {
